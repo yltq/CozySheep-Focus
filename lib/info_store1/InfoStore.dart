@@ -21,6 +21,10 @@ class InfoStore {
     try {
       if (jsonRecords != null) {
         list = jsonRecords.map((json) => FocusInfo.fromJson(jsonDecode(json))).toList();
+        list.sort((a, b) => b.sys.compareTo(a.sys));
+        list.forEach((info) {
+          info.modes?.sort((a, b) => b.sys.compareTo(a.sys));
+        });
       }
     } catch(e) {
       print('list is ${e}');

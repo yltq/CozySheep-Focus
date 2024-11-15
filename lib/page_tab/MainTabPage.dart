@@ -7,6 +7,7 @@ import 'package:listen_bleat/bleat_info1/FocusModeInfo.dart';
 import 'package:listen_bleat/info_store1/InfoStore.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import '../bleat_info1/FavoriteMode.dart';
 import '../bleat_info1/FocusStatisticsInfo.dart';
@@ -42,7 +43,7 @@ class _MainTabPageState extends State<MainTabPage> {
     DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
     // 打印前 7 天的日期
-    for (int i = 1; i <= 7; i++) {
+    for (int i = 0; i < 7; i++) {
       DateTime previousDate = today.subtract(Duration(days: i));
       String formattedDate = dateFormat.format(previousDate);
       StatisticsLastDay lastDay = StatisticsLastDay();
@@ -65,72 +66,79 @@ class _MainTabPageState extends State<MainTabPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Container(
-              width: screenWidth(context),
-              height: screenHeight(context),
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFFFFB),
-              ),
-              child: buildImage('${pageTag}bg'),
-            ),
-            Scaffold(
-              bottomNavigationBar: BottomNavigationBar(
-                  currentIndex: _selectedIndex,
-                  selectedItemColor: Color(0xFF5099B5),
-                  // 选中时的颜色
-                  unselectedItemColor: Color(0XFFD5D5DB),
-                  // 未选中时的颜色
-                  onTap: _onItemTapped,
-                  items: [
-                    BottomNavigationBarItem(
-                        icon: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: buildImage(_selectedIndex == 0
-                              ? '${pageTag}home'
-                              : '${pageTag}home_unable'),
-                        ),
-                        label: 'Home'),
-                    BottomNavigationBarItem(
-                        icon: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: buildImage(_selectedIndex == 1
-                                ? '${pageTag}statistics'
-                                : '${pageTag}statistics_unable')),
-                        label: 'Statistics'),
-                    BottomNavigationBarItem(
-                        icon: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: buildImage(_selectedIndex == 2
-                                ? '${pageTag}settings'
-                                : '${pageTag}settings_unable')),
-                        label: 'Settings')
-                  ]),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.endFloat,
-              floatingActionButton: Visibility(child: FloatingActionButton(
-                backgroundColor: Color(0xFF5099B5),
-                mini: true,
-                onPressed: () {
-                  Navigator.pushNamed(context, PAGE_ADD);
-                },
-                child: ClipOval(
-                  child: Container(
-                    color: Color(0xFF5099B5),
-                    width: 64,
-                    height: 64,
-                    child: buildImage('${pageTag}add', fit: BoxFit.fill),
-                  ),
+        child: VisibilityDetector(
+          key: Key('main_Tab'),
+          onVisibilityChanged: (visibilityInfo) {
+            fetchFocusRecordInfo();
+            fetchStatisticsInfo();
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                width: screenWidth(context),
+                height: screenHeight(context),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFFFFB),
                 ),
-              ), visible: _selectedIndex == 0,),
-              body: buildPage(_selectedIndex),
-            ),
-          ],
+                child: buildImage('${pageTag}bg'),
+              ),
+              Scaffold(
+                bottomNavigationBar: BottomNavigationBar(
+                    currentIndex: _selectedIndex,
+                    selectedItemColor: Color(0xFF5099B5),
+                    // 选中时的颜色
+                    unselectedItemColor: Color(0XFFD5D5DB),
+                    // 未选中时的颜色
+                    onTap: _onItemTapped,
+                    items: [
+                      BottomNavigationBarItem(
+                          icon: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: buildImage(_selectedIndex == 0
+                                ? '${pageTag}home'
+                                : '${pageTag}home_unable'),
+                          ),
+                          label: 'Home'),
+                      BottomNavigationBarItem(
+                          icon: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: buildImage(_selectedIndex == 1
+                                  ? '${pageTag}statistics'
+                                  : '${pageTag}statistics_unable')),
+                          label: 'Statistics'),
+                      BottomNavigationBarItem(
+                          icon: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: buildImage(_selectedIndex == 2
+                                  ? '${pageTag}settings'
+                                  : '${pageTag}settings_unable')),
+                          label: 'Settings')
+                    ]),
+                floatingActionButtonLocation:
+                FloatingActionButtonLocation.endFloat,
+                floatingActionButton: Visibility(child: FloatingActionButton(
+                  backgroundColor: Color(0xFF5099B5),
+                  mini: true,
+                  onPressed: () {
+                    Navigator.pushNamed(context, PAGE_ADD);
+                  },
+                  child: ClipOval(
+                    child: Container(
+                      color: Color(0xFF5099B5),
+                      width: 64,
+                      height: 64,
+                      child: buildImage('${pageTag}add', fit: BoxFit.fill),
+                    ),
+                  ),
+                ), visible: _selectedIndex == 0,),
+                body: buildPage(_selectedIndex),
+              ),
+            ],
+          ),
         ),
         onWillPop: () async {
           return false;
@@ -509,20 +517,22 @@ class _MainTabPageState extends State<MainTabPage> {
                             Spacer(
                               flex: 1,
                             ),
-                            buildText("Favorite Plans", Color(0xFF525252), 12),
+                            SizedBox(width: 90, child: buildText("Favorite Plans", Color(0xFF525252), 12),),
                             const SizedBox(
-                              height: 8,
+                              height: 4,
                             ),
                             Row(
                               children: [
                                 Spacer(
                                   flex: 1,
                                 ),
-                                buildText(
-                                    statisticsInfo.favoriteModeName.isEmpty? 'none' : statisticsInfo.favoriteModeName,
-                                    Color(0xFF2C2B49),
-                                    20,
-                                    fontWeight: FontWeight.bold),
+                                SizedBox(
+                                  width: 80,
+                                    child: buildText(
+                                        statisticsInfo.favoriteModeName.isEmpty? 'none' : statisticsInfo.favoriteModeName,
+                                        Color(0xFF2C2B49),
+                                        15,textAlign: TextAlign.center,
+                                        fontWeight: FontWeight.bold)),
                                 Spacer(
                                   flex: 1,
                                 ),
@@ -733,8 +743,8 @@ class _MainTabPageState extends State<MainTabPage> {
                                     SizedBox(
                                       width: 24,
                                     ),
-                                    Expanded(child: buildText(info.name, Color(0xFFFFFFFF), 31,
-                                        fontWeight: FontWeight.bold)),
+                                    Expanded(child: buildText(info.name, Color(0xFFFFFFFF), 18,
+                                        fontWeight: FontWeight.bold, textAlign: TextAlign.start)),
                                     Spacer(
                                       flex: 1,
                                     )
@@ -874,6 +884,16 @@ class _MainTabPageState extends State<MainTabPage> {
 
   Future<List<FocusModeInfo>> fetchFocusModeInfo() async {
     List<FocusModeInfo> list = await InfoStore.hqCreatedMode();
+    if(list.isEmpty) {
+      FocusModeInfo mode = FocusModeInfo();
+      mode.name = 'Pomodoro Timer';
+      mode.sys = DateTime.now().millisecondsSinceEpoch;
+      mode.date = DateFormat('yyyy-MM-dd').format(
+          DateTime.fromMillisecondsSinceEpoch(
+              mode.sys));
+      list.add(mode);
+      InfoStore.bcCreatedMode(list);
+    }
     return list;
   }
 
@@ -886,7 +906,7 @@ class _MainTabPageState extends State<MainTabPage> {
     DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
     // 打印前 7 天的日期
-    for (int i = 1; i <= 7; i++) {
+    for (int i = 0; i < 7; i++) {
       DateTime previousDate = today.subtract(Duration(days: i));
       String formattedDate = dateFormat.format(previousDate);
       StatisticsLastDay lastDay = StatisticsLastDay();

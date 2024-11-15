@@ -138,13 +138,14 @@ class _PlanFocusDetailPageState extends State<PlanFocusDetailPage> {
     if(_isPlaying) {
       _stop();
     }
+    player.setReleaseMode(ReleaseMode.loop);
     await player.setSource(AssetSource(fetchBackgroundMusic(backgroundMusicIndex)));
     await _play();
   }
 
   void back() {
     //0-专注页面，1-专注成功页，2-专注失败页，3-休息页面，4-休息完成
-    if(pageFocusStatus == 0 || pageFocusStatus == 3) return;
+    if(pageFocusStatus == 0) return;
     _stop();
     Navigator.of(context).pop();
   }
@@ -228,7 +229,7 @@ class _PlanFocusDetailPageState extends State<PlanFocusDetailPage> {
                       ),)
                     ],
                   ),
-                  SizedBox(height: 100,),
+                  SizedBox(height: 60,),
 
                   Expanded(child: Stack(
                     children: [
@@ -277,7 +278,7 @@ class _PlanFocusDetailPageState extends State<PlanFocusDetailPage> {
                             buildText('${timeInt2String(widget.mode.focusTime * 60)}', Color(0xFF2C2B49), 26, fontWeight: FontWeight.bold),
                             SizedBox(height: 28,),
                             SizedBox(width: 330, child: buildText(
-                                'You just completed a focus session of {focus time}; your efforts were not in vain—give yourself a pat on the back!',
+                                'You just completed a focus session of ${secondsToOtherTimeStringNoFH(widget.mode.focusTime * 60)}; your efforts were not in vain—give yourself a pat on the back!',
                                 Color(0xFFCACAD1), 12, maxLines: 4)),
                             SizedBox(height: 64,),
                             GestureDetector(
@@ -295,6 +296,26 @@ class _PlanFocusDetailPageState extends State<PlanFocusDetailPage> {
                               ),
                               onTap: () {
                                 startBreak();
+                              },
+                            ),
+                            SizedBox(height: 10,),
+                            GestureDetector(
+                              child: Container(
+                                width: 272,
+                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                child: Column(
+                                  children: [
+                                    buildText('Skip', Color(0xFF5B8FCF), 15),
+                                    Container(
+                                      color: Color(0xFF5B8FCF),
+                                      width: 40,
+                                      height: 1,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              onTap: () {
+                                startFocus(true);
                               },
                             ),
                             SizedBox(height: 54,)
@@ -648,6 +669,7 @@ class _PlanFocusDetailPageState extends State<PlanFocusDetailPage> {
   }
 
   void cancelLongPress() {
+    if(pageFocusStatus != 0) return;
     int tick = countdownTimer == null? 0 : countdownTimer!.tick;
     if(tick < 3) {
       longPress3STimer?.cancel();

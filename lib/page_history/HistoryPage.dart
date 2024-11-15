@@ -106,7 +106,7 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
           ),
           onTap: () {
-
+              Navigator.popAndPushNamed(context, PAGE_ADD);
           },
         ),
 
