@@ -658,7 +658,6 @@ class _PlanFocusDetailPageState extends State<PlanFocusDetailPage> {
       if(timer.tick >= 3) {
         timer.cancel();
         _stop();
-        print('startLongPress3s-------${widget.mode.focusTime * 60 - focusShowTime}');
         addFocusRecord(false, widget.mode.focusTime * 60 - focusShowTime);
         setState(() {
           longPressWaiting = false;

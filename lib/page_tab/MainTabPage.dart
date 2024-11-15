@@ -973,7 +973,6 @@ class _MainTabPageState extends State<MainTabPage> {
           if (item.date == focusInfo.date) {
             item.totalTime = focusInfo.focusSuccessTime;
             item.progress = focusInfo.focusSuccessTime / (8 * 60 * 60);
-            print('progress-----${item.progress}---${focusInfo.focusSuccessTime}----');
           }
         });
       });
@@ -1146,24 +1145,20 @@ class _MainTabPageState extends State<MainTabPage> {
   }
 
   Future<void> toPolicy() async {
-    String host = 'stayfoolish.feishu.cn';
-    String path = '/docx';
-    final Uri uri = Uri(scheme: 'https', host: host, path: path);
-    if (await canLaunchUrl(uri)) {
+    final Uri _url = Uri.parse('https://flutter.dev');
+    if (await canLaunchUrl(_url)) {
       await launchUrl(
-        uri,
+        _url,
         mode: LaunchMode.externalApplication,
       );
     }
   }
 
   Future<void> toTerms() async {
-    String host = 'stayfoolish.feishu.cn';
-    String path = '/docx';
-    final Uri uri = Uri(scheme: 'https', host: host, path: path);
-    if (await canLaunchUrl(uri)) {
+    final Uri _url = Uri.parse('https://flutter.dev');
+    if (await canLaunchUrl(_url)) {
       await launchUrl(
-        uri,
+        _url,
         mode: LaunchMode.externalApplication,
       );
     }

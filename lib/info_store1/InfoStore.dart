@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class InfoStore {
   static Future<void> bcFocusRecord(List<FocusInfo> items) async {
     final prefs = await SharedPreferences.getInstance();
-    print('bcFocusRecord-------${items[0].toJson()}');
     List<String> jsonRecords = items.map((record) => jsonEncode(record.toJson())).toList();
     await prefs.setStringList('focus_record', jsonRecords);
   }
@@ -16,7 +15,6 @@ class InfoStore {
     final prefs = await SharedPreferences.getInstance();
 
     List<String>? jsonRecords = prefs.getStringList('focus_record');
-    print('hqFocusRecord-------${jsonRecords}');
     List<FocusInfo> list = [];
     try {
       if (jsonRecords != null) {
